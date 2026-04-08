@@ -4,13 +4,8 @@
   box-sizing: border-box;
 }
 
-body,
-#app {
-  height: 100dvh;
-}
-
-canvas {
-  position: fixed;
-  width: 100%;
-  height: 100%;
+#root {
+  display: grid;
+  place-items: center;
+  background: #0e0e0e;
 }
