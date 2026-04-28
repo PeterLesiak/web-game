@@ -3,6 +3,8 @@ export const Palette = {
   Foreground: '#ffffff',
   Outline: '#000000',
 
+  DragEffect: '#917454',
+
   GrassPrimary: '#4ea343',
   GrassSecondary: '#53ae46',
 
@@ -13,8 +15,14 @@ export const Palette = {
 export const LayerIndex = {
   Board: 1,
 
-  SoccerBall: 2,
-  Ball: 3,
+  BallDragCone: 2,
+  BallDragCircle: 3,
 
-  GateNet: 4,
+  SoccerBall: 4,
+  Ball: 5,
+
+  GateNet: 6,
 } as const;
+
+export const ballRadius = 16;
+export const ballBorder = 5;

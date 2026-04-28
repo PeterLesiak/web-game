@@ -5,7 +5,7 @@ import { Palette } from '~/resources';
 
 const game = new ex.Engine({
   width: 460,
-  height: 850,
+  height: 1000,
 
   displayMode: ex.DisplayMode.FitScreen,
   pointerScope: ex.PointerScope.Document,

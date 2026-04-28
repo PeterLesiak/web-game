@@ -3,33 +3,56 @@ import * as ex from 'excalibur';
 import { Board } from '~/actors/board';
 import { Ball } from '~/actors/ball';
 import { SoccerBall } from '~/actors/soccer-ball';
+import { BallDragEffect } from '~/actors/ball-drag-effect';
+
+const ballStartPositions = [
+  ex.vec(0, 60),
+  ex.vec(-60, 110),
+  ex.vec(60, 110),
+  ex.vec(35, 315),
+  ex.vec(-35, 315),
+];
 
 export class Start extends ex.Scene {
   override onInitialize(engine: ex.Engine): void {
     const board = new Board();
     this.add(board);
 
-    {
-      const playerBall = new Ball('player');
-      engine.screen.center.sub(ex.vec(0, -50), playerBall.pos);
+    const playerBalls = Array.from(ballStartPositions, offset => {
+      const ball = new Ball('player');
+      engine.screen.center.sub(ex.vec(offset.x, -offset.y), ball.pos);
 
-      this.add(playerBall);
+      this.add(ball);
 
-      const enemyBall1 = new Ball('enemy');
-      engine.screen.center.sub(ex.vec(-100, -200), enemyBall1.pos);
+      return ball;
+    });
 
-      this.add(enemyBall1);
+    Array.from(ballStartPositions, offset => {
+      const ball = new Ball('enemy');
+      engine.screen.center.sub(offset, ball.pos);
 
-      const enemyBall2 = new Ball('enemy');
-      engine.screen.center.sub(ex.vec(100, -200), enemyBall2.pos);
+      this.add(ball);
 
-      this.add(enemyBall2);
-    }
+      return ball;
+    });
 
-    Ball.showOutline('player');
+    const ballDragEffect = new BallDragEffect();
+    this.add(ballDragEffect);
+
+    engine.input.pointers.primary.on('up', event => {
+      playerBalls.forEach(ball => {
+        ball.emit('cancelDragEffect', { ...event, ballDragEffect });
+      });
+    });
+
+    engine.input.pointers.primary.on('move', event => {
+      playerBalls.forEach(ball => {
+        ball.emit('updateDragEffect', { ...event, ballDragEffect });
+      });
+    });
 
     const soccerBall = new SoccerBall();
-    engine.screen.center.sub(ex.vec(0, 50), soccerBall.pos);
+    engine.screen.center.clone(soccerBall.pos);
 
     this.add(soccerBall);
   }

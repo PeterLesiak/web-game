@@ -1,13 +1,12 @@
 import * as ex from 'excalibur';
 
+import { type BallDragEffect } from '~/actors/ball-drag-effect';
 import { DampingComponent } from '~/components/damping-component';
-import { LayerIndex, Palette } from '~/resources';
+import { ballBorder, ballRadius, LayerIndex, Palette } from '~/resources';
 import { drawRoundedStar } from '~/utils';
 
 export type Team = 'player' | 'enemy';
 
-const ballRadius = 16;
-const ballBorder = 5;
 const desiredDashLength = 16;
 const desiredGapLength = 12;
 const dashLineWidth = 4.5;
@@ -139,24 +138,40 @@ export class Ball extends ex.Actor {
     this.pointer.useGraphicsBounds = false;
     this.body.bounciness = 0.2;
 
-    this.on('pointerdragstart', event => {
+    this.on('pointerdragstart', () => {
       this.dragging = true;
-      this.dragStart = event.screenPos;
-
-      Ball.hideOutline();
+      this.dragStart = this.globalPos;
     });
 
     this.on('predraw', () => this.onPreDraw());
   }
 
-  override onInitialize(engine: ex.Engine): void {
-    engine.input.pointers.primary.on('up', event => {
-      if (this.dragging) {
-        const dir = this.dragStart.sub(event.screenPos);
+  override onInitialize(): void {
+    this.on('cancelDragEffect', data => {
+      const event = data as ex.PointerEvent & { ballDragEffect: BallDragEffect };
 
-        this.launch(dir.normalize());
-        this.dragging = false;
-      }
+      if (!this.dragging) return;
+
+      const dir = this.dragStart.sub(event.coordinates.screenPos);
+
+      this.launch(dir.normalize());
+      this.dragging = false;
+
+      event.ballDragEffect.cancelEffect();
+    });
+
+    this.on('updateDragEffect', data => {
+      const event = data as ex.PointerEvent & { ballDragEffect: BallDragEffect };
+
+      if (!this.dragging) return;
+
+      const distance = this.dragStart.distance(event.coordinates.screenPos);
+
+      event.ballDragEffect.updateEffect(
+        this.pos,
+        event.coordinates.screenPos,
+        distance,
+      );
     });
   }
 
@@ -165,12 +180,10 @@ export class Ball extends ex.Actor {
       return;
     }
 
-    const speed = 800;
+    const speed = 850;
 
     this.body.wake();
     this.vel = dir.scale(speed);
-
-    Ball.showOutline(this.team);
   }
 
   onPreDraw(): void {

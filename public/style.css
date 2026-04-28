@@ -1,11 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 900;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
 }
 
 #root {
   display: grid;
   place-items: center;
   background: #0e0e0e;
+}
+
+.scoreboard {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 18rem;
+  text-transform: uppercase;
+  align-items: end;
+}
+
+.score-left,
+.score-middle,
+.score-right {
+  background: #6b4846;
+  display: flex;
+  padding: 0.25rem 0.5rem;
+}
+
+.score-left,
+.score-right {
+  height: 3.5rem;
+}
+
+.score-left {
+  justify-content: end;
+  border-radius: 0.5rem 0 0 0.5rem;
+  color: #f66457;
+}
+
+.score-right {
+  justify-content: start;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #00bfea;
+}
+
+.score-left .score-upper,
+.score-right .score-upper {
+  font-size: 1rem;
+}
+
+.score-left .score-lower,
+.score-right .score-lower {
+  font-size: 1.5rem;
+}
+
+.score-middle {
+  height: 4rem;
+  justify-content: center;
+  border-radius: 0.3rem 0.3rem 0 0;
+  color: white;
+}
+
+.score-middle .score-upper {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.score-middle .score-lower {
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
 }

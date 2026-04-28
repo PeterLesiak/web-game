@@ -93,7 +93,7 @@ export class SoccerBall extends ex.Actor {
 
     this.addComponent(
       new DampingComponent({
-        damping: 0.6,
+        damping: 0.95,
         minSpeed: 10,
       }),
     );
@@ -101,7 +101,7 @@ export class SoccerBall extends ex.Actor {
     this.graphic = graphic;
 
     this.body.bounciness = 0.4;
-    this.body.mass = 5;
+    this.body.mass = 3;
 
     this.on('predraw', () => this.onPreDraw());
   }
