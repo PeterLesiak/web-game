@@ -17,7 +17,7 @@ class BallDragCone extends ex.Raster {
     ctx.save();
 
     const gradient = ctx.createLinearGradient(mag, 0, 0, 0);
-    gradient.addColorStop(0, 'transparent');
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
     gradient.addColorStop(0.3, Palette.Foreground);
     gradient.addColorStop(1, Palette.Foreground);
 
@@ -35,9 +35,7 @@ class BallDragCone extends ex.Raster {
   }
 
   override clone(): ex.Graphic {
-    const clone = new BallDragCone();
-    clone.vertex = this.vertex.clone();
-    return clone;
+    return new BallDragCone();
   }
 }
 

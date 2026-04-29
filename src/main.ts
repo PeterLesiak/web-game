@@ -1,6 +1,7 @@
 import * as ex from 'excalibur';
 
 import { Start } from '~/scenes/start';
+import { createUI } from '~/game-ui';
 import { Palette } from '~/resources';
 
 const game = new ex.Engine({
@@ -22,6 +23,8 @@ const game = new ex.Engine({
     start: Start,
   },
 });
+
+export const ui = createUI();
 
 await game.start();
 await game.goToScene('start');

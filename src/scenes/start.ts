@@ -14,46 +14,68 @@ const ballStartPositions = [
 ];
 
 export class Start extends ex.Scene {
+  players!: Ball[];
+  enemies!: Ball[];
+
+  soccerBall!: SoccerBall;
+
   override onInitialize(engine: ex.Engine): void {
     const board = new Board();
     this.add(board);
 
-    const playerBalls = Array.from(ballStartPositions, offset => {
+    this.soccerBall = new SoccerBall();
+    this.add(this.soccerBall);
+
+    this.players = Array.from(ballStartPositions, () => {
       const ball = new Ball('player');
-      engine.screen.center.sub(ex.vec(offset.x, -offset.y), ball.pos);
 
       this.add(ball);
 
       return ball;
     });
 
-    Array.from(ballStartPositions, offset => {
+    this.enemies = Array.from(ballStartPositions, () => {
       const ball = new Ball('enemy');
-      engine.screen.center.sub(offset, ball.pos);
 
       this.add(ball);
 
       return ball;
     });
+
+    this.reset();
 
     const ballDragEffect = new BallDragEffect();
     this.add(ballDragEffect);
 
     engine.input.pointers.primary.on('up', event => {
-      playerBalls.forEach(ball => {
+      this.players.forEach(ball => {
         ball.emit('cancelDragEffect', { ...event, ballDragEffect });
       });
     });
 
     engine.input.pointers.primary.on('move', event => {
-      playerBalls.forEach(ball => {
+      this.players.forEach(ball => {
         ball.emit('updateDragEffect', { ...event, ballDragEffect });
       });
     });
+  }
 
-    const soccerBall = new SoccerBall();
-    engine.screen.center.clone(soccerBall.pos);
+  reset() {
+    this.engine.screen.center.clone(this.soccerBall.pos);
+    this.soccerBall.vel = ex.Vector.Zero;
 
-    this.add(soccerBall);
+    this.players.forEach((ball, index) => {
+      const offset = ballStartPositions[index];
+
+      this.engine.screen.center.sub(ex.vec(offset.x, -offset.y), ball.pos);
+      ball.vel = ex.Vector.Zero;
+    });
+
+    this.enemies.forEach((ball, index) => {
+      const offset = ballStartPositions[index];
+
+      this.engine.screen.center.sub(ex.vec(offset.x, offset.y), ball.pos);
+      ball.vel = ex.Vector.Zero;
+    });
   }
 }

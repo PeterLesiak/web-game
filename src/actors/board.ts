@@ -1,6 +1,10 @@
 import * as ex from 'excalibur';
 
+import { ballGroup } from '~/actors/ball';
+import { soccerBallGroup } from '~/actors/soccer-ball';
+import { ui } from '~/main';
 import { LayerIndex, Palette } from '~/resources';
+import type { Start } from '~/scenes/start';
 import { drawVerticalMirror } from '~/utils';
 
 const fieldWidth = 391;
@@ -25,6 +29,8 @@ const outsideGateHeight =
 
 const boardWidth = fieldWidth + frameSize * 2;
 const boardHeight = fieldHeight + frameSize * 2 + outsideGateHeight * 2;
+
+export const boardFrameGroup = ex.CollisionGroupManager.create('board-frame');
 
 class BoardGraphic extends ex.Raster {
   constructor() {
@@ -282,6 +288,7 @@ export class Board extends ex.Entity {
     // Left border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: fieldWidth + frameSize,
@@ -293,6 +300,7 @@ export class Board extends ex.Entity {
     // Right border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         y: outsideGateHeight,
@@ -304,6 +312,7 @@ export class Board extends ex.Entity {
     // Top left border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         y: outsideGateHeight,
@@ -314,6 +323,7 @@ export class Board extends ex.Entity {
     // Top right border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth + outsideGateWidth) * 0.5 - outsideGateFrameSize,
@@ -326,6 +336,7 @@ export class Board extends ex.Entity {
     // Top left gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth - outsideGateWidth) * 0.5,
@@ -337,6 +348,7 @@ export class Board extends ex.Entity {
     // Top right gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth + outsideGateWidth) * 0.5 - outsideGateFrameSize,
@@ -349,6 +361,7 @@ export class Board extends ex.Entity {
     // Top gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth - outsideGateWidth) * 0.5,
@@ -361,6 +374,7 @@ export class Board extends ex.Entity {
     // Bottom left border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         y: boardHeight - outsideGateHeight - frameSize,
@@ -371,6 +385,7 @@ export class Board extends ex.Entity {
     // Bottom right border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth + outsideGateWidth) * 0.5 - outsideGateFrameSize,
@@ -383,6 +398,7 @@ export class Board extends ex.Entity {
     // Bottom left gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth - outsideGateWidth) * 0.5,
@@ -394,6 +410,7 @@ export class Board extends ex.Entity {
     // Bottom right gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth + outsideGateWidth) * 0.5 - outsideGateFrameSize,
@@ -406,6 +423,7 @@ export class Board extends ex.Entity {
     // Bottom gate border
     bounds.addChild(
       new ex.Actor({
+        collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, ballGroup]),
         collisionType: ex.CollisionType.Fixed,
         anchor: ex.vec(0, 0),
         x: (boardWidth - outsideGateWidth) * 0.5,
@@ -414,6 +432,39 @@ export class Board extends ex.Entity {
         height: frameSize,
       }),
     );
+
+    const enemyGate = new ex.Actor({
+      collisionGroup: soccerBallGroup,
+      collisionType: ex.CollisionType.Passive,
+      anchor: ex.vec(0, 0),
+      x: (boardWidth - outsideGateWidth) * 0.5,
+      y: 0,
+      width: outsideGateWidth,
+      height: outsideGateHeight,
+    });
+    bounds.addChild(enemyGate);
+
+    const playerGate = new ex.Actor({
+      collisionGroup: soccerBallGroup,
+      anchor: ex.vec(0, 0),
+      x: (boardWidth - outsideGateWidth) * 0.5,
+      y: boardHeight - outsideGateHeight,
+      width: outsideGateWidth,
+      height: outsideGateHeight,
+    });
+    bounds.addChild(playerGate);
+
+    enemyGate.on('collisionstart', () => {
+      ui.setPlayerScore(ui.playerScore + 1);
+
+      (engine.currentScene as Start).reset();
+    });
+
+    playerGate.on('collisionstart', () => {
+      ui.setEnemyScore(ui.enemyScore + 1);
+
+      (engine.currentScene as Start).reset();
+    });
 
     engine.add(bounds);
   }

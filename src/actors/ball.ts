@@ -1,5 +1,7 @@
 import * as ex from 'excalibur';
 
+import { boardFrameGroup } from '~/actors/board';
+import { soccerBallGroup } from '~/actors/soccer-ball';
 import { type BallDragEffect } from '~/actors/ball-drag-effect';
 import { DampingComponent } from '~/components/damping-component';
 import { ballBorder, ballRadius, LayerIndex, Palette } from '~/resources';
@@ -12,6 +14,8 @@ const desiredGapLength = 12;
 const dashLineWidth = 4.5;
 const ballOutlineRadius = ballRadius + ballBorder * 2.25;
 const graphicRadius = ballOutlineRadius + dashLineWidth;
+
+export const ballGroup = ex.CollisionGroupManager.create('ball');
 
 class BallGraphic extends ex.Raster {
   readonly team: Team;
@@ -118,6 +122,7 @@ export class Ball extends ex.Actor {
     const graphic = new BallGraphic(team);
 
     super({
+      collisionGroup: ex.CollisionGroup.combine([soccerBallGroup, boardFrameGroup]),
       collisionType: ex.CollisionType.Active,
       collider: new ex.CircleCollider({ radius: ballRadius + ballBorder }),
       graphic,

@@ -1,3 +1,8 @@
+import * as ex from 'excalibur';
+
+export const ballRadius = 16;
+export const ballBorder = 5;
+
 export const Palette = {
   Background: '#f79976',
   Foreground: '#ffffff',
@@ -23,6 +28,3 @@ export const LayerIndex = {
 
   GateNet: 6,
 } as const;
-
-export const ballRadius = 16;
-export const ballBorder = 5;

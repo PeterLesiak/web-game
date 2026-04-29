@@ -1,5 +1,7 @@
 import * as ex from 'excalibur';
 
+import { boardFrameGroup } from '~/actors/board';
+import { ballGroup } from '~/actors/ball';
 import { DampingComponent } from '~/components/damping-component';
 import { LayerIndex, Palette } from '~/resources';
 
@@ -7,6 +9,8 @@ const ballRadius = 8;
 const ballBorder = 3;
 const ballOutlineRadius = ballBorder + ballRadius * 2.75;
 const graphicRadius = ballOutlineRadius + 1;
+
+export const soccerBallGroup = ex.CollisionGroupManager.create('soccer-ball');
 
 class SoccerBallGraphic extends ex.Raster {
   constructor() {
@@ -85,6 +89,7 @@ export class SoccerBall extends ex.Actor {
     const graphic = new SoccerBallGraphic();
 
     super({
+      collisionGroup: ex.CollisionGroup.combine([ballGroup, boardFrameGroup]),
       collisionType: ex.CollisionType.Active,
       collider: new ex.CircleCollider({ radius: ballRadius + ballBorder }),
       graphic,
